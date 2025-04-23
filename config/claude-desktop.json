@@ -1,0 +1,10 @@
+{
+    "mcpServers": {
+        "taskflow": {
+            "command": "node",
+            "args": [
+                "C:\\Users\\ratho\\Desktop\\data analysis\\clone_github\\taskflow-memory-server\\server.js"
+            ]
+        }
+    }
+}
