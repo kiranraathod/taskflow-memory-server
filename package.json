@@ -5,10 +5,15 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "nodemon --exec 'npm run build && node dist/server.js'",
     "test": "jest",
-    "setup-claude": "node scripts/setup-claude-desktop.js"
+    "setup-claude": "node dist/scripts/setup-claude-desktop.js",
+    "start-project": "node dist/start-from-project.js",
+    "init-project": "node dist/scripts/init-project.js",
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean"
   },
   "keywords": [
     "taskflow",
@@ -21,15 +26,19 @@
   "license": "MIT",
   "dependencies": {
     "dotenv": "^16.3.1",
-    "fastmcp": "^0.5.0",
     "fs-extra": "^11.1.1",
     "lru-cache": "^10.0.1",
     "uuid": "^9.0.0",
-    "winston": "^3.11.0"
+    "winston": "^3.11.0",
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "jest": "^29.5.0",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "typescript": "^5.3.3",
+    "@types/node": "^20.10.0",
+    "rimraf": "^5.0.5"
   },
   "engines": {
     "node": ">=16.0.0"
