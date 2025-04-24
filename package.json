@@ -2,18 +2,20 @@
   "name": "taskflow-memory-server",
   "version": "1.0.0",
   "description": "TaskFlow server with persistent memory management for task execution and context awareness",
-  "main": "server.js",
+  "main": "dist/server.js",
   "type": "module",
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
-    "dev": "nodemon --exec 'npm run build && node dist/server.js'",
+    "dev": "nodemon --exec \"npm run build && node dist/server.js\"",
     "test": "jest",
     "setup-claude": "node dist/scripts/setup-claude-desktop.js",
     "start-project": "node dist/start-from-project.js",
     "init-project": "node dist/scripts/init-project.js",
     "clean": "rimraf dist",
-    "prebuild": "npm run clean"
+    "prebuild": "npm run clean",
+    "postbuild": "npm run copy-assets",
+    "copy-assets": "node scripts/copy-assets.js"
   },
   "keywords": [
     "taskflow",

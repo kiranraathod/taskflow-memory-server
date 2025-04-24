@@ -2,9 +2,9 @@
 
 import TaskflowMemoryServer from './src/index.js';
 import dotenv from 'dotenv';
+import { logger } from './src/logger.js';
 import path from 'path';
 import fs from 'fs';
-import { logger } from './src/logger.js';
 
 // Load environment variables - prioritize from working directory first, then server directory
 try {
@@ -25,7 +25,7 @@ try {
 /**
  * Start the TaskFlow Memory server
  */
-async function startServer() {
+async function startServer(): Promise<void> {
   // Parse any command-line options
   const args = process.argv.slice(2);
   const options: { port?: number } = {};
