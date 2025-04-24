@@ -14,6 +14,7 @@ TaskFlow Memory Server is a specialized server that combines task management fea
 - **Plan/Act Modes**: Supports distinct planning and execution workflows.
 - **AI Integration**: Uses Claude AI for intelligent planning and task management.
 - **Persistent State**: Maintains context between sessions for continuous workflow.
+- **MCP SDK Integration**: Uses the official Model Context Protocol TypeScript SDK.
 
 ## Core Components
 
@@ -21,7 +22,7 @@ TaskFlow Memory Server is a specialized server that combines task management fea
 - **Context Manager**: Manages context information with caching and Memory Bank integration.
 - **Plan/Act Mode Engine**: Controls planning and execution workflows with mode-specific functionality.
 - **Async Operation Manager**: Handles long-running operations with status tracking.
-- **TaskFlow Tools**: Collection of tools for interacting with the system through the FastMCP protocol.
+- **TaskFlow Tools**: Collection of tools for interacting with the system through the MCP protocol.
 
 ## Memory Bank Structure
 
@@ -90,9 +91,9 @@ MEMORY_BANK_PATH=./memory-bank
 LOG_LEVEL=info
 ```
 
-## Using with FastMCP-compatible clients
+## Using with MCP-compatible clients
 
-TaskFlow Memory Server can be used with clients that support the FastMCP protocol. Configure your client to connect to the server and use the provided tools for interacting with the Memory Bank and managing tasks.
+TaskFlow Memory Server can be used with clients that support the Model Context Protocol (MCP). Configure your client to connect to the server and use the provided tools for interacting with the Memory Bank and managing tasks.
 
 Example workflow:
 ```
@@ -141,12 +142,17 @@ Memory Bank files should be updated when:
 2. Implementing significant changes
 3. When context needs clarification
 
-Use the `update_memory_bank` tool to trigger a complete review and update of all Memory Bank files.
+Use the `update_memory_file` tool to update specific Memory Bank files with new information.
+
+## Migration to Official MCP SDK
+
+This project has been migrated from the third-party FastMCP framework to the official Model Context Protocol (MCP) TypeScript SDK. For details about the migration, see [MIGRATION.md](MIGRATION.md).
 
 ## Documentation
 
 - [Getting Started Guide](docs/getting-started.md) - Basic setup and usage instructions
 - [Technical Reference](docs/technical-reference.md) - Detailed technical documentation
+- [Migration Guide](MIGRATION.md) - Details about the migration to the official MCP SDK
 
 ## License
 
