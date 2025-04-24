@@ -157,9 +157,6 @@ Use the `update_memory_file` tool to update specific Memory Bank files with new 
 - `npm run clean` - Clean the build directory
 - `npm test` - Run tests
 
-## Migration from FastMCP
-
-This project has been migrated from the FastMCP framework to the official MCP SDK. See [MIGRATION.md](MIGRATION.md) for detailed information about the migration process.
 
 ## License
 
