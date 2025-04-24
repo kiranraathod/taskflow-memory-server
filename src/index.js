@@ -3,7 +3,9 @@
  * Main server implementation for TaskFlow Memory Server
  */
 
-import { FastMCP } from 'fastmcp';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { HttpServerTransport } from '@modelcontextprotocol/sdk/server/http.js';
 import path from 'path';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
@@ -39,17 +41,12 @@ class TaskflowMemoryServer {
 			logger.warn(`Failed to read package.json: ${error.message}`);
 		}
 
-		this.options = {
-			name: 'TaskFlow Memory Server',
-			version: version
-		};
-
-		this.server = new FastMCP(this.options);
+		// Initialize with the MCP SDK
+		this.server = new McpServer(
+			{ name: 'TaskFlow Memory Server', version },
+			{ capabilities: { tools: {}, resources: {} } }
+		);
 		this.initialized = false;
-
-		// Resource templates
-		this.server.addResource({});
-		this.server.addResourceTemplate({});
 
 		// Make managers accessible
 		this.asyncManager = asyncOperationManager;
@@ -93,26 +90,24 @@ class TaskflowMemoryServer {
 			await this.init();
 		}
 
-		// Configure server startup options
-		const startOptions = {
-			timeout: 120000 // 2 minutes timeout
-		};
-		
-		// If port is specified, use HTTP transport, otherwise use stdio
-		if (options.port) {
-			startOptions.transportType = 'http';
-			startOptions.port = options.port;
-			logger.info(`Using HTTP transport on port ${options.port}`);
-		} else {
-			startOptions.transportType = 'stdio';
-			logger.info('Using stdio transport (compatible with Claude for Desktop)');
+		try {
+			// If port is specified, use HTTP transport, otherwise use stdio
+			if (options.port) {
+				const httpTransport = new HttpServerTransport({ port: options.port });
+				await this.server.connect(httpTransport);
+				logger.info(`Using HTTP transport on port ${options.port}`);
+			} else {
+				const stdioTransport = new StdioServerTransport();
+				await this.server.connect(stdioTransport);
+				logger.info('Using stdio transport (compatible with Claude for Desktop)');
+			}
+			
+			logger.info(`TaskFlow Memory Server started (version ${this.server.getVersion()})`);
+			return this;
+		} catch (error) {
+			logger.error(`Failed to start server: ${error.message}`);
+			throw error;
 		}
-
-		// Start the FastMCP server
-		await this.server.start(startOptions);
-
-		logger.info(`TaskFlow Memory Server started (version ${this.options.version})`);
-		return this;
 	}
 
 	/**
@@ -120,7 +115,7 @@ class TaskflowMemoryServer {
 	 */
 	async stop() {
 		if (this.server) {
-			await this.server.stop();
+			await this.server.disconnect();
 			logger.info('TaskFlow Memory Server stopped');
 		}
 	}

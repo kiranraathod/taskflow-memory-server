@@ -3,6 +3,7 @@
  * Export all tools for TaskFlow Memory server
  */
 
+import { z } from 'zod';
 import { registerMemoryBankTools } from './memory-bank-tools/index.js';
 import { registerPlanActTools } from './plan-act-tools/index.js';
 import { modeManager } from '../core/plan-act/index.js';
@@ -11,7 +12,7 @@ import logger from '../logger.js';
 
 /**
  * Register all tools with the TaskFlow server
- * @param {Object} server - FastMCP server instance
+ * @param {Object} server - MCP server instance
  * @param {Object} asyncManager - Async operation manager
  * @param {Object} memoryManager - Memory Manager instance
  */
@@ -24,20 +25,13 @@ export function registerTaskflowTools(server, asyncManager, memoryManager) {
 		registerPlanActTools(server, asyncManager);
 		
 		// Register operation status tool
-		server.addTool({
-			name: 'get_operation_status',
-			description: 'Get the status of an asynchronous operation',
-			parameters: {
-				type: 'object',
-				required: ['operationId'],
-				properties: {
-					operationId: {
-						type: 'string',
-						description: 'ID of the operation to check'
-					}
-				}
-			},
-			handler: async ({ operationId }) => {
+		server.tool(
+			'get_operation_status',
+			'Get the status of an asynchronous operation',
+			z.object({
+				operationId: z.string().describe('ID of the operation to check')
+			}),
+			async ({ operationId }) => {
 				try {
 					const status = asyncManager.getOperationStatus(operationId);
 					
@@ -65,23 +59,16 @@ export function registerTaskflowTools(server, asyncManager, memoryManager) {
 					};
 				}
 			}
-		});
+		);
 		
 		// Register operation result tool
-		server.addTool({
-			name: 'get_operation_result',
-			description: 'Get the result of a completed asynchronous operation',
-			parameters: {
-				type: 'object',
-				required: ['operationId'],
-				properties: {
-					operationId: {
-						type: 'string',
-						description: 'ID of the operation to get results for'
-					}
-				}
-			},
-			handler: async ({ operationId }) => {
+		server.tool(
+			'get_operation_result',
+			'Get the result of a completed asynchronous operation',
+			z.object({
+				operationId: z.string().describe('ID of the operation to get results for')
+			}),
+			async ({ operationId }) => {
 				try {
 					const result = asyncManager.getOperationResult(operationId);
 					
@@ -111,17 +98,14 @@ export function registerTaskflowTools(server, asyncManager, memoryManager) {
 					};
 				}
 			}
-		});
+		);
 		
 		// Register system status tool
-		server.addTool({
-			name: 'get_system_status',
-			description: 'Get the current status of the TaskFlow system',
-			parameters: {
-				type: 'object',
-				properties: {}
-			},
-			handler: async () => {
+		server.tool(
+			'get_system_status',
+			'Get the current status of the TaskFlow system',
+			z.object({}),
+			async () => {
 				try {
 					// Get Memory Manager stats
 					const memoryStats = memoryManager.getStats();
@@ -160,17 +144,14 @@ export function registerTaskflowTools(server, asyncManager, memoryManager) {
 					};
 				}
 			}
-		});
+		);
 		
 		// Register get current mode tool
-		server.addTool({
-			name: 'get_current_mode',
-			description: 'Get the current operating mode (plan or act)',
-			parameters: {
-				type: 'object',
-				properties: {}
-			},
-			handler: async () => {
+		server.tool(
+			'get_current_mode',
+			'Get the current operating mode (plan or act)',
+			z.object({}),
+			async () => {
 				try {
 					const currentMode = modeManager.getCurrentMode();
 					
@@ -187,7 +168,7 @@ export function registerTaskflowTools(server, asyncManager, memoryManager) {
 					};
 				}
 			}
-		});
+		);
 		
 		logger.info('All TaskFlow tools registered successfully');
 	} catch (error) {

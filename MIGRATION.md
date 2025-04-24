@@ -41,30 +41,7 @@ TaskFlow Memory Server has been migrated from the FastMCP framework to the offic
 }
 ```
 
-### 2. TypeScript Configuration
-
-Added TypeScript support with a `tsconfig.json` file:
-
-```json
-{
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "ES2022",
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "strict": true,
-    "outDir": "dist",
-    "sourceMap": true,
-    "declaration": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
-  },
-  "include": ["src/**/*", "server.ts"],
-  "exclude": ["node_modules", "dist"]
-}
-```
-
-### 3. Server Initialization Changes
+### 2. Server Initialization Changes
 
 **Before (using FastMCP):**
 ```javascript
@@ -76,18 +53,18 @@ this.server = new FastMCP(this.options);
 ```
 
 **After (using MCP SDK):**
-```typescript
+```javascript
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 // ...
 
 this.server = new McpServer(
-  { name: 'TaskFlow Memory Server', version: this.version },
+  { name: 'TaskFlow Memory Server', version },
   { capabilities: { tools: {}, resources: {} } }
 );
 ```
 
-### 4. Transport Changes
+### 3. Transport Changes
 
 **Before (using FastMCP):**
 ```javascript
@@ -109,7 +86,7 @@ await this.server.start(startOptions);
 ```
 
 **After (using MCP SDK):**
-```typescript
+```javascript
 // If port is specified, use HTTP transport, otherwise use stdio
 if (options.port) {
   const httpTransport = new HttpServerTransport({ port: options.port });
@@ -120,7 +97,7 @@ if (options.port) {
 }
 ```
 
-### 5. Tool Registration Changes
+### 4. Tool Registration Changes
 
 **Before (using FastMCP):**
 ```javascript
@@ -144,7 +121,7 @@ server.addTool({
 ```
 
 **After (using MCP SDK with Zod):**
-```typescript
+```javascript
 server.tool(
   'get_operation_status',
   'Get the status of an asynchronous operation',
@@ -157,7 +134,7 @@ server.tool(
 );
 ```
 
-### 6. Server Stop/Disconnect Changes
+### 5. Server Stop/Disconnect Changes
 
 **Before (using FastMCP):**
 ```javascript
@@ -170,8 +147,8 @@ async stop() {
 ```
 
 **After (using MCP SDK):**
-```typescript
-async stop(): Promise<void> {
+```javascript
+async stop() {
   if (this.server) {
     await this.server.disconnect();
     logger.info('TaskFlow Memory Server stopped');
@@ -182,61 +159,27 @@ async stop(): Promise<void> {
 ## Key Benefits of Migration
 
 1. **Official SDK Support:** Using the official MCP SDK ensures better compatibility with MCP clients and future updates.
-2. **TypeScript Support:** Full TypeScript support improves code quality and developer experience.
-3. **Zod Schema Validation:** Strong schema validation with Zod ensures better type safety for tools.
-4. **Improved Modularity:** Cleaner separation of concerns with dedicated transport modules.
-5. **Future Proofing:** The official SDK will receive ongoing updates and features.
-
-## Breaking Changes and Considerations
-
-1. **TypeScript Required:** The codebase now requires TypeScript.
-2. **Build Step:** A build step is now required before running the server.
-3. **Zod Schema Validation:** More strict schema validation might require updates to client code.
-4. **Transport Configuration:** Different approach to configuring transports.
-
-## Build and Run Instructions
-
-1. **Install Dependencies:**
-   ```bash
-   npm install
-   ```
-
-2. **Build the Project:**
-   ```bash
-   npm run build
-   ```
-
-3. **Run the Server:**
-   ```bash
-   # With stdio transport (for Claude Desktop)
-   npm start
-   
-   # With HTTP transport on port 3000
-   npm start -- --port 3000
-   ```
+2. **Strong Schema Validation:** Using Zod for schema validation provides better type safety and validation.
+3. **Better Modularity:** Cleaner separation of concerns with dedicated transport modules.
+4. **Future Proofing:** The official SDK will receive ongoing updates and features.
 
 ## Troubleshooting
 
 ### Common Issues and Solutions
 
-1. **TypeScript Errors:**
-   - Ensure TypeScript is installed: `npm install -D typescript`
-   - Check tsconfig.json is properly configured
+1. **Missing Dependencies:**
+   - Make sure to run `npm install` after updating package.json
+   - Verify that `@modelcontextprotocol/sdk` and `zod` are installed
 
-2. **Missing Imports:**
-   - Make sure to use the correct import paths from the MCP SDK
-   - Imports should include the file extension (e.g., `import { x } from './y.js'`)
-
-3. **Zod Validation Errors:**
-   - Ensure all parameters match the defined Zod schema
-   - Check that required fields are provided and properly typed
-
-4. **Transport Connection Issues:**
+2. **Transport Connection Issues:**
    - For HTTP transport, verify the port is available
    - For stdio transport, ensure proper parent-child process communication
+
+3. **Zod Validation Errors:**
+   - Make sure all tool parameters match the defined Zod schema
+   - Check required fields are being provided
 
 ## References
 
 - [MCP TypeScript SDK Documentation](https://github.com/anthropics/mcp-sdk-typescript)
 - [Zod Documentation](https://github.com/colinhacks/zod)
-- [TypeScript Documentation](https://www.typescriptlang.org/docs/)
